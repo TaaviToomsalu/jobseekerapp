@@ -5,6 +5,7 @@ import com.taavi.jobseekerapp.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +34,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Registreerimine & sisselogimine on avalik
+                        .requestMatchers("/").permitAll() //Testkontrolleri lubamine
+                        .requestMatchers(HttpMethod.GET, "/jobs", "/jobs/{id}").permitAll() // GET päringud kõigile (kuulutuste vaatamine)
+                        .requestMatchers(HttpMethod.POST, "/jobs").hasRole("EMPLOYER") // Ainult tööandjad saavad postitada
+                        .requestMatchers(HttpMethod.PUT, "/jobs/{id}").hasRole("EMPLOYER") // Ainult tööandjad saavad uuendada
+                        .requestMatchers(HttpMethod.DELETE, "/jobs/{id}").hasRole("EMPLOYER") // Ainult tööandjad saavad kustutada
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

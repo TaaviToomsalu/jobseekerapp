@@ -1,6 +1,7 @@
 package com.taavi.jobseekerapp.service;
 
 import com.taavi.jobseekerapp.dto.AuthRequest;
+import com.taavi.jobseekerapp.dto.RegisterRequest;
 import com.taavi.jobseekerapp.dto.AuthResponse;
 import com.taavi.jobseekerapp.entity.User;
 import com.taavi.jobseekerapp.repository.UserRepository;
@@ -19,7 +20,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthResponse register(AuthRequest request) {
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
