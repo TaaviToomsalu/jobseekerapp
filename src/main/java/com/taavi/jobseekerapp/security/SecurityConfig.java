@@ -31,6 +31,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Registreerimine & sisselogimine on avalik
@@ -39,9 +42,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/jobs").hasRole("EMPLOYER") // Ainult tööandjad saavad postitada
                         .requestMatchers(HttpMethod.PUT, "/jobs/{id}").hasRole("EMPLOYER") // Ainult tööandjad saavad uuendada
                         .requestMatchers(HttpMethod.DELETE, "/jobs/{id}").hasRole("EMPLOYER") // Ainult tööandjad saavad kustutada
+                        .requestMatchers("/h2-console/**").permitAll() // Lubab H2 konsoolile ligipääsu
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
